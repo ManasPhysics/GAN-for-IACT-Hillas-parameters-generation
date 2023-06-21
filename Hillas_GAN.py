@@ -188,7 +188,7 @@ train(generator, discriminator, gan_model, latent_dim)
 
 
 """
-#### This module is for loss and accuray plot ######
+#### This module is for loss plot ######
 
 fig1 = plt.figure("Figure 1")
 #plt.plot(g_loss_hist,linewidth=0.70,color='green',label='Generator loss')
@@ -204,16 +204,7 @@ plt.legend()
 
 
 
-fig2 = plt.figure("Figure 2")
-plt.plot(np.array(d_acc_R_hist),linewidth=1.0,color='red',label='Disc. accu Real')
-plt.plot(np.array(d_acc_F_hist),linewidth=1.0,color='blue',label='Disc. accu Fake')
-plt.xlabel(r'$\mathbf{Epochs}$',fontsize=12)
-plt.ylabel(r'$\mathbf{Accuracy}$',fontsize=12)
-plt.ylim(0,1.1)
-plt.xlim(0,EPOCHS)
-plt.hlines(0.5,0,1000,ls='dashed',color='black',label='Accuracy=50%')
-plt.legend() 
-##### Loss and accuracy plot ends here ###########
+##### Loss plot ends here ###########
 """
 
 
