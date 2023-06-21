@@ -75,18 +75,6 @@ def define_discriminator(n_inputs=INPUTS):
     return model
  
 # define the standalone generator model
-
-"""
-def define_generator(latent_dim, n_outputs=INPUTS):
-    model = Sequential()
-    model.add(Dense(64, input_dim=latent_dim, kernel_initializer='he_uniform'))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(16, activation='relu'))
-    model.add(LeakyReLU(alpha=0.2))
-    model.add(Dropout(DROP))
-    model.add(Dense(n_outputs, activation='linear'))
-    return model
- """
  
 def define_generator(latent_dim, n_outputs=INPUTS):
     model = Sequential()
@@ -96,7 +84,6 @@ def define_generator(latent_dim, n_outputs=INPUTS):
     model.add(LeakyReLU(alpha=0.2))
     model.add(Dense(16))
     model.add(LeakyReLU(alpha=0.2))
-#    model.add(Dropout(DROP))
     model.add(Dense(n_outputs, activation='linear'))
     return model
  
@@ -198,21 +185,15 @@ gan_model = define_gan(generator, discriminator)
 # train model
 train(generator, discriminator, gan_model, latent_dim)
 
-### Suggestions ###
-"""
-https://machinelearningmastery.com/practical-guide-to-gan-failure-modes/
-1.plot  as per loss plot given in website . Total 5 graphs to be generated in  2plots
-2.You may increase the batch size of training
-"""
-# PLot module for loss accuray etc 
 
 
 """
+#### This module is for loss and accuray plot ######
 
 fig1 = plt.figure("Figure 1")
 #plt.plot(g_loss_hist,linewidth=0.70,color='green',label='Generator loss')
-plt.plot(1.06*np.array(d_loss_R_hist),linewidth=1.0,color='red',label=' Disc. loss Real')
-plt.plot(1.06*np.array(d_loss_F_hist),linewidth=1.0,color='blue',label='Disc. loss Fake')
+plt.plot(1.0*np.array(d_loss_R_hist),linewidth=1.0,color='red',label=' Disc. loss Real')
+plt.plot(1.0*np.array(d_loss_F_hist),linewidth=1.0,color='blue',label='Disc. loss Fake')
 plt.xlabel(r'$\mathbf{Epochs}$',fontsize=12)
 plt.ylabel('Discriminator loss',fontsize=12,fontweight='bold')
 plt.xlim(0,EPOCHS)
@@ -224,94 +205,15 @@ plt.legend()
 
 
 fig2 = plt.figure("Figure 2")
-plt.plot(1.0*np.array(d_acc_R_hist),linewidth=1.0,color='red',label='Disc. accu Real')
-plt.plot(0.71*np.array(d_acc_F_hist),linewidth=1.0,color='blue',label='Disc. accu Fake')
+plt.plot(np.array(d_acc_R_hist),linewidth=1.0,color='red',label='Disc. accu Real')
+plt.plot(np.array(d_acc_F_hist),linewidth=1.0,color='blue',label='Disc. accu Fake')
 plt.xlabel(r'$\mathbf{Epochs}$',fontsize=12)
 plt.ylabel(r'$\mathbf{Accuracy}$',fontsize=12)
 plt.ylim(0,1.1)
 plt.xlim(0,EPOCHS)
 plt.hlines(0.5,0,1000,ls='dashed',color='black',label='Accuracy=50%')
 plt.legend() 
-
-
-
-
-
-
-
-
-
-
-
-#### Summarize the performance ########################
-
-def summarize_performance(epoch, generator, discriminator, latent_dim, n=2000):
-    # prepare real samples
-    x_real, y_real = generate_real_samples(n)
-    # evaluate discriminator on real examples
-    _, acc_real = discriminator.evaluate(x_real, y_real, verbose=0)
-    # prepare fake examples
-    x_fake, y_fake = generate_fake_samples(generator, latent_dim, n)
-    # evaluate discriminator on fake examples
-    _, acc_fake = discriminator.evaluate(x_fake, y_fake, verbose=0)
-    # summarize discriminator performance
-    print(epoch, acc_real, acc_fake)
-    # scatter plot real and fake data points
-    ## Three axes for Length,Width,Size reconstruction ########
-    fig, ax = plt.subplots(1, 4)
-    ax[0].scatter(x_real[:, 0],x_real[:, 1] ,color='red',s=0.05)
-    ax[0].scatter(x_fake[:, 0],x_fake[:, 1],s=0.05,color='blue')
-    ax[0].set_xlabel(r'$\mathbf{Length}$')
-    ax[0].set_ylabel(r'$\mathbf{Width}$')
-    ax[0].set_xlim(-2.5,5.)
-    ax[0].set_ylim(-3.0,8.0)
-
-    
-    ax[1].scatter(x_real[:, 0],x_real[:, 2] ,color='red',s=0.05)
-    ax[1].scatter(x_fake[:, 0],x_fake[:, 2],s=0.05,color='blue')
-    ax[1].set_xlabel(r'$\mathbf{Length}$')
-    ax[1].set_ylabel(r'$\mathbf{log_{10}(Size)}$')
-    ax[1].set_xlim(-2.5,5.)
-
-    
-    
-    ax[2].scatter(x_real[:, 1],x_real[:, 2] ,color='red',s=0.05)
-    ax[2].scatter(x_fake[:, 1],x_fake[:, 2],s=0.05,color='blue')
-    ax[2].set_xlabel(r'$\mathbf{Width}$')
-    ax[2].set_xlim(-2.5,5.)
-    ax[2].set_ylabel(r'$\mathbf{log_{10}(Size)}$')
-    
-    
-    ax[3].scatter(x_real[:, 2],x_real[:, 3] ,color='red',s=0.05)
-    ax[3].scatter(x_fake[:, 2],x_fake[:, 3],s=0.05,color='blue')
-    ax[3].set_xlabel(r'$\mathbf{log_{10}(Size)}$')
-    ax[3].set_xlim(-2.5,5.0)
-    ax[3].set_ylabel(r'$\mathbf{Dist}$')
-    
-    
-    
-   
-    fig.subplots_adjust(left=0.0,bottom=0.1,right=1.0,top=0.7, wspace=0.4,hspace=0.6)
-
-    plt.show()
-
-
-### Plot Models of GAN #### 
-
-plot_model(
-    generator,
-    to_file='model.png',
-    show_shapes=True,
-    show_dtype=False,
-    show_layer_names=True,
-    rankdir='TB',
-    expand_nested=False,
-    dpi=96,
-    layer_range=None,
-    show_layer_activations=True)
-
-
-
-
-
+##### Loss and accuracy plot ends here ###########
 """
+
+
